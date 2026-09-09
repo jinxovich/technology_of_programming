@@ -31,14 +31,6 @@ LEFT JOIN users u ON u.id = p.author_id
 """
 
 
-class RegisterIn(BaseModel):
-    username: str
-    password: str
-    full_name: str
-    role: str
-    department_id: int | None = None
-
-
 class LoginIn(BaseModel):
     username: str
     password: str
@@ -123,19 +115,7 @@ def check_department(user: User, publication: dict) -> None:
         raise HTTPException(403, "Публикация другого отдела")
 
 
-# --- вход и регистрация ---------------------------------------------------
-
-
-@app.post("/api/register")
-def register(data: RegisterIn) -> dict:
-    check_role(data.role, data.department_id)
-    if db.row("SELECT 1 FROM users WHERE username = ?", (data.username,)):
-        raise HTTPException(400, "Логин уже занят")
-    db.run(
-        "INSERT INTO users (username, password, full_name, role, department_id) VALUES (?, ?, ?, ?, ?)",
-        (data.username, hash_pw(data.password), data.full_name, data.role, data.department_id),
-    )
-    return login(LoginIn(username=data.username, password=data.password))
+# --- вход -----------------------------------------------------------------
 
 
 @app.post("/api/login")
