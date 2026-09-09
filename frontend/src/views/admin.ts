@@ -9,6 +9,19 @@ export async function adminView(): Promise<View> {
 
   const html = `
     <h1 class="page-title">Список сотрудников</h1>
+    <form class="card row" data-form="new-user">
+      <label class="grow">ФИО<input name="full_name" placeholder="Иванов Иван Иванович" required /></label>
+      <label>Логин<input name="username" required autocomplete="off" /></label>
+      <label>Пароль<input name="password" type="password" required autocomplete="new-password" /></label>
+      <label>Должность<select name="role">${options(ROLE_OPTIONS)}</select></label>
+      <label>Отдел
+        <select name="department_id">
+          <option value="">— без отдела —</option>
+          ${options(state.departments)}
+        </select>
+      </label>
+      <button class="primary">Принять на работу</button>
+    </form>
     <form class="card row" data-form="department">
       <label class="grow">Новый отдел<input name="name" placeholder="Название отдела" required /></label>
       <button>Добавить</button>
@@ -23,6 +36,13 @@ export async function adminView(): Promise<View> {
   return {
     html,
     wire(root) {
+      onSubmit(root, 'new-user', async (data) => {
+        await api('/users', 'POST', {
+          ...data,
+          department_id: data.department_id ? Number(data.department_id) : null,
+        });
+        await render();
+      });
       onSubmit(root, 'department', async (data) => {
         state.departments = await api<Department[]>('/departments', 'POST', data);
         await render();
