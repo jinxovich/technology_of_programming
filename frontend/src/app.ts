@@ -51,7 +51,7 @@ function header(): string {
   return `
     <header class="top">
       <div class="wrap bar">
-        <div class="brand">Вестник<span>.online</span></div>
+        <div class="brand">Новостной <span>сайт</span></div>
         <nav class="tabs">
           ${tab('news', 'Сайт')}
           ${tab('work', me ? 'Рабочее место' : 'Вход')}
