@@ -58,6 +58,6 @@ export function authView(): View {
 async function enter(result: AuthResult): Promise<void> {
   setToken(result.token);
   state.me = result.user;
-  state.page = 'news';
+  state.page = 'work';
   await render();
 }
