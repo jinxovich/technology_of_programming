@@ -145,6 +145,11 @@ h2 {
   gap: 10px;
 }
 
+/* .card задаёт колонку — для формы-строки её нужно перебить */
+.card.row {
+  flex-direction: row;
+}
+
 .grow {
   flex: 1;
   min-width: 180px;
