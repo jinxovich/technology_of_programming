@@ -165,8 +165,10 @@ def add_user(data: UserIn, _: User = Depends(need("users"))) -> dict:
 
 
 @app.patch("/api/users/{user_id}")
-def update_user(user_id: int, data: UserPatch, _: User = Depends(need("users"))) -> dict:
+def update_user(user_id: int, data: UserPatch, user: User = Depends(need("users"))) -> dict:
     check_role(data.role, data.department_id)
+    if user_id == user.id and data.role != user.role:
+        raise HTTPException(400, "Нельзя сменить собственную должность")
     db.run(
         "UPDATE users SET full_name = ?, role = ?, department_id = ? WHERE id = ?",
         (data.full_name, data.role, data.department_id, user_id),
