@@ -44,6 +44,14 @@ class LoginIn(BaseModel):
     password: str
 
 
+class UserIn(BaseModel):
+    username: str
+    password: str
+    full_name: str
+    role: str
+    department_id: int | None = None
+
+
 class UserPatch(BaseModel):
     full_name: str
     role: str
@@ -162,6 +170,18 @@ def add_department(data: NameIn, _: User = Depends(need("users"))) -> list[dict]
 @app.get("/api/users")
 def users(_: User = Depends(need("users"))) -> list[dict]:
     return [models.from_row(r).public() for r in db.rows(USER_SQL + " ORDER BY u.full_name")]
+
+
+@app.post("/api/users")
+def add_user(data: UserIn, _: User = Depends(need("users"))) -> dict:
+    check_role(data.role, data.department_id)
+    if db.row("SELECT 1 FROM users WHERE username = ?", (data.username,)):
+        raise HTTPException(400, "Логин уже занят")
+    user_id = db.run(
+        "INSERT INTO users (username, password, full_name, role, department_id) VALUES (?, ?, ?, ?, ?)",
+        (data.username, hash_pw(data.password), data.full_name, data.role, data.department_id),
+    )
+    return models.from_row(db.row(USER_SQL + " WHERE u.id = ?", (user_id,))).public()
 
 
 @app.patch("/api/users/{user_id}")
