@@ -1,5 +1,5 @@
 import { api, setToken } from '../api';
-import { render } from '../app';
+import { loadDepartments, render } from '../app';
 import { state } from '../state';
 import type { Me, View } from '../types';
 import { onSubmit } from '../ui';
@@ -29,6 +29,7 @@ export function authView(): View {
         const result = await api<AuthResult>('/login', 'POST', data);
         setToken(result.token);
         state.me = result.user;
+        await loadDepartments();
         state.page = 'work';
         await render();
       });

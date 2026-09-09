@@ -136,15 +136,19 @@ def me(user: User = Depends(current_user)) -> dict:
 # --- отделы и сотрудники (администратор) ----------------------------------
 
 
-@app.get("/api/departments")
-def departments() -> list[dict]:
+def all_departments() -> list[dict]:
     return db.rows("SELECT * FROM departments ORDER BY name")
+
+
+@app.get("/api/departments")
+def departments(_: User = Depends(current_user)) -> list[dict]:
+    return all_departments()
 
 
 @app.post("/api/departments")
 def add_department(data: NameIn, _: User = Depends(need("users"))) -> list[dict]:
     db.run("INSERT INTO departments (name) VALUES (?)", (data.name,))
-    return departments()
+    return all_departments()
 
 
 @app.get("/api/users")

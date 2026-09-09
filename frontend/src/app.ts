@@ -9,15 +9,20 @@ import { chiefView } from './views/chief';
 import { editorView } from './views/editor';
 import { newsView } from './views/news';
 
+export async function loadDepartments(): Promise<void> {
+  state.departments = await api<Department[]>('/departments');
+}
+
 export async function boot(): Promise<void> {
   if (token) {
     try {
       state.me = await api<Me>('/me');
+      await loadDepartments();
     } catch {
       setToken('');
+      state.me = null;
     }
   }
-  state.departments = await api<Department[]>('/departments');
   await render();
 }
 
