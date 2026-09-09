@@ -4,6 +4,7 @@ import type { Department, Me, View } from './types';
 import { esc, onClick } from './ui';
 import { authView } from './views/auth';
 import { authorView } from './views/author';
+import { editorView } from './views/editor';
 import { newsView } from './views/news';
 
 export async function boot(): Promise<void> {
@@ -34,6 +35,7 @@ export async function render(): Promise<void> {
 function currentView(): Promise<View> | View {
   if (state.page === 'news') return newsView();
   if (!state.me) return authView();
+  if (state.me.role === 'editor') return editorView();
   return authorView();
 }
 
