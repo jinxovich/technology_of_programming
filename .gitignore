@@ -1,0 +1,6 @@
+__pycache__/
+*.py[cod]
+backend/news.db
+
+node_modules/
+dist/
